@@ -1,0 +1,67 @@
+version: '3'
+
+services:
+
+  #PHP
+  app:
+    volumes:
+      - ./sales-api:/var/www/html/sales-api/
+    image: sales-api-php
+    container_name: sales-api-php
+    build:
+      context: .
+      dockerfile: ./docker/php/Dockerfile
+    networks:
+      - sales-api-network
+    depends_on:
+      - "mongodb"
+
+  #Web Server
+  nginx:
+    volumes:
+      - ./sales-api:/var/www/html/sales-api/
+    image: sales-api-webserver
+    container_name: sales-api-webserver
+    build:
+      context: .
+      dockerfile: ./docker/nginx/Dockerfile
+    ports:
+      - "16500:80"
+      - "44330:443"
+    depends_on:
+      - "app"
+    networks:
+      - sales-api-network
+
+  #MongoDB
+  mongodb:
+    build:
+      context: .
+      dockerfile: ./docker/mongo/Dockerfile
+    image: sales-api-mongodb
+    container_name: sales-api-mongodb
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongo
+      MONGO_INITDB_ROOT_PASSWORD: mongo
+    ports:
+      - "27087:27017"
+    networks:
+      - sales-api-network
+
+  composer:
+    volumes:
+      - ./sales-api:/app
+    image: sales-api-composer
+    container_name: sales-api-composer
+    build:
+      context: .
+      dockerfile: ./docker/composer/Dockerfile
+    depends_on:
+      - "app"
+    networks:
+      - sales-api-network
+
+networks:
+  sales-api-network:
+    driver: bridge
