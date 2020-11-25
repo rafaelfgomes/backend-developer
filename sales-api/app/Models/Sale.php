@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Support\Facades\Date;
 use Jenssegers\Mongodb\Eloquent\Model;
 
-class Installment extends Model
+class Sale extends Model
 {
   /**
    * @var Date

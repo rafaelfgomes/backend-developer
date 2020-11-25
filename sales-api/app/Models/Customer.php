@@ -6,7 +6,6 @@ use Jenssegers\Mongodb\Eloquent\Model;
 
 class Customer extends Model
 {
-
   /**
    * @var string
    */
