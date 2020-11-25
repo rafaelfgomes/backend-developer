@@ -7,7 +7,7 @@ use App\Interfaces\RepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 
-class SaleRepository implements RepositoryInterface
+class SalesRepository implements RepositoryInterface
 {
   private $model;
 

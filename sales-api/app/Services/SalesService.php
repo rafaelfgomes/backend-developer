@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Illuminate\Http\Request;
 use App\Interfaces\RepositoryInterface;
+use Illuminate\Http\JsonResponse;
 
 class SalesService
 {
@@ -44,8 +45,8 @@ class SalesService
     $this->addressRepository = $addressRepository;
   }
 
-  public function uploadSales(Request $request)
+  public function uploadSales(array $request) : JsonResponse
   {
-    dd($request->all());
+    dd($request);
   }
 }
