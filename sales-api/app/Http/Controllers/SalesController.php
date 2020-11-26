@@ -26,6 +26,6 @@ class SalesController extends Controller
 
     public function uploadSales(Request $request) : JsonResponse
     {
-        return $this->salesService->uploadSales($request->all());
+        return $this->salesService->uploadSales($request);
     }
 }

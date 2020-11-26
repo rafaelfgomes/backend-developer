@@ -5,6 +5,7 @@ namespace App\Services;
 use Illuminate\Http\Request;
 use App\Interfaces\RepositoryInterface;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\File;
 
 class SalesService
 {
@@ -45,8 +46,24 @@ class SalesService
     $this->addressRepository = $addressRepository;
   }
 
-  public function uploadSales(array $request) : JsonResponse
+  public function uploadSales(Request $request) : JsonResponse
   {
-    dd($request);
+    $data = [];
+    $file = fopen($request->sales, 'r');
+
+    while (!feof($file)) {
+
+      $values = extractTextInfo(fgets($file));
+
+      if ($values['code']) {
+        $values['customerName'] = trim($values['customerName']);
+        $data[] = $values;
+      }
+
+    }
+
+    fclose($file);
+
+    return response()->json(['data' => $data]);
   }
 }
