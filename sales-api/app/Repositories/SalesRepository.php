@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\Sale;
 use App\Interfaces\RepositoryInterface;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 
@@ -49,10 +50,10 @@ class SalesRepository implements RepositoryInterface
    * @param string $id
    * @return App\Models\Sale
    */
-  public function storeOrUpdate(Request $request, string $id) : ?Sale
+  public function storeOrUpdate(array $data, string $id = '') : ?Sale
   {
-    $example = $this->model->find($id);
-    return (!$example) ? $this->model->create($request->all()) : tap($example)->update($request->all());
+    $example = isset($id) ? $this->model->find($id) : null;
+    return (!$example) ? $this->model->create($data) : tap($example)->update($data);
   }
 
   /**
@@ -64,5 +65,32 @@ class SalesRepository implements RepositoryInterface
   public function delete(string $id) : ?Sale
   {
     return $this->model->find($id)->delete();
+  }
+
+  /**
+   * Set data to Model.
+   *
+   * @param string $id
+   * @return App\Models\Sale
+   */
+  public function setData(array $data) : void
+  {
+    $amountConverted = convertToDouble($data['amount']);
+    $date = convertToDate($data['date']);
+
+    $this->model->setCode($data['code']);
+    $this->model->setDate($date);
+    $this->model->setAmount($amountConverted);
+  }
+
+  public function getFields() : ?array
+  {
+    $model = [
+      'code' => $this->model->getCode(),
+      'date' => $this->model->getDate(),
+      'amount' => $this->model->getAmount()
+    ];
+
+    return $model;
   }
 }

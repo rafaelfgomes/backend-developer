@@ -1,6 +1,8 @@
 <?php
 
-function extractTextInfo($line)
+use Carbon\Carbon;
+
+function extractTextInfo(string $line)
 {
   $characters = str_split($line);
 
@@ -43,4 +45,25 @@ function extractTextInfo($line)
 
     return $data;
   }
+}
+
+function convertToDouble(string $value)
+{
+  $cents = intval(substr($value, (strlen($value) - 2), 2)) / 100;
+  $amount = intval(substr($value, 0, (strlen($value) - 2)));
+  $amountWithCents = round($amount + $cents, 2);
+  return $amountWithCents;
+}
+
+function formatNumber($number) {
+  return number_format($number, 2);
+}
+
+function convertToDate(string $date)
+{
+  $year = substr($date, 0, 4);
+  $month = substr($date, 4, 2);
+  $day = substr($date, 6, 2);
+
+  return Carbon::createFromDate($year, $month, $day)->toDateString();
 }

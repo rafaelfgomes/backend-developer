@@ -4,6 +4,10 @@ namespace App\Services;
 
 use Illuminate\Http\Request;
 use App\Interfaces\RepositoryInterface;
+use App\Repositories\AddressRepository;
+use App\Repositories\CustomerRepository;
+use App\Repositories\InstallmentRepository;
+use App\Repositories\SalesRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\File;
 
@@ -23,22 +27,16 @@ class SalesService
 
   /**
    *
-   * @var CustomerMentRespository
+   * @var CustomerRespository
    */
   private $customerRepository;
-
-  /**
-   *
-   * @var AddressRespository
-   */
-  private $addressRepository;
 
   /**
    * Create a new service instance.
    *
    * @return void
    */
-  public function __construct(RepositoryInterface $salesRepository, RepositoryInterface $installmentRepository,RepositoryInterface $customerRepository, RepositoryInterface $addressRepository)
+  public function __construct(SalesRepository $salesRepository, InstallmentRepository $installmentRepository,CustomerRepository $customerRepository, AddressRepository $addressRepository)
   {
     $this->salesRepository = $salesRepository;
     $this->installmentRepository = $installmentRepository;
@@ -49,6 +47,7 @@ class SalesService
   public function uploadSales(Request $request) : JsonResponse
   {
     $data = [];
+    $response = [];
     $file = fopen($request->sales, 'r');
 
     while (!feof($file)) {
@@ -64,6 +63,36 @@ class SalesService
 
     fclose($file);
 
-    return response()->json(['data' => $data]);
+    foreach ($data as $key => $value) {
+      $this->salesRepository->setData($value);
+      $this->customerRepository->setData($value);
+      $this->addressRepository->setData($value);
+
+      $sales = $this->salesRepository->getFields();
+      $customer = $this->customerRepository->getFields();
+      $address = $this->addressRepository->getFields();
+      $installments = $this->installmentRepository->calculateInstallments($value);
+
+      $response[] = [
+        'sales' => [
+          'id' => $sales['code'],
+          'date' => $sales['date'],
+          'amount' => $sales['amount'],
+          'customer' => [
+            'name' => $customer['name'],
+            'address' => [
+              'street' => $address['street'],
+              'neighborhood' => $address['neighborhood'],
+              'city' => $address['city'],
+              'state' => $address['state'],
+              'postal_code' => $address['postal_code']
+            ]
+          ],
+          'installments' => $installments
+        ]
+      ];
+    }
+
+    return response()->json($response);
   }
 }

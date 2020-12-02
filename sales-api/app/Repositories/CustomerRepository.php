@@ -5,11 +5,10 @@ namespace App\Repositories;
 use App\Models\Customer;
 use App\Interfaces\RepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Http\Request;
 
-class CustomerRepository implements RepositoryInterface
+class CustomerRepository
 {
-  private $model;
+  private $customer;
 
   /**
    * Create a new repository instance.
@@ -18,51 +17,26 @@ class CustomerRepository implements RepositoryInterface
    */
   public function __construct(Customer $customer)
   {
-    $this->model = $customer;
+    $this->customer = $customer;
   }
 
   /**
-   * Get all resources.
-   *
-   * @return Illuminate\Database\Eloquent\Collection
-   */
-  public function all() : ?Collection
-  {
-    return $this->model->all();
-  }
-
-  /**
-   * Get one resource.
+   * Set data to Model.
    *
    * @param string $id
-   * @return App\Models\Customer
+   * @return App\Models\Sale
    */
-  public function show(string $id) : ?Customer
+  public function setData(array $data) : void
   {
-    return $this->model->find($id);
+    $this->customer->setName($data['customerName']);
   }
 
-  /**
-   * Store or update one resource.
-   *
-   * @param Illuminate\Http\Request $request
-   * @param string $id
-   * @return App\Models\Customer
-   */
-  public function storeOrUpdate(Request $request, string $id) : ?Customer
+  public function getFields() : ?array
   {
-    $example = $this->model->find($id);
-    return (!$example) ? $this->model->create($request->all()) : tap($example)->update($request->all());
-  }
+    $customer = [
+      'name' => $this->customer->getName()
+    ];
 
-  /**
-   * Delete one resource.
-   *
-   * @param string $id
-   * @return App\Models\Customer
-   */
-  public function delete(string $id) : ?Customer
-  {
-    return $this->model->find($id)->delete();
+    return $customer;
   }
 }

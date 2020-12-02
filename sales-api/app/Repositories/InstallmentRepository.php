@@ -4,13 +4,10 @@ namespace App\Repositories;
 
 
 use App\Models\Installment;
-use Illuminate\Http\Request;
-use App\Interfaces\RepositoryInterface;
-use Illuminate\Database\Eloquent\Collection;
 
-class InstallmentRepository extends RepositoryInterface
+class InstallmentRepository
 {
-  private $model;
+  private $installment;
 
   /**
    * Create a new repository instance.
@@ -19,51 +16,38 @@ class InstallmentRepository extends RepositoryInterface
    */
   public function __construct(Installment $installment)
   {
-    $this->model = $installment;
+    $this->installment = $installment;
   }
 
   /**
-   * Get all resources.
-   *
-   * @return Illuminate\Database\Eloquent\Collection
-   */
-  public function all() : ?Collection
-  {
-    return $this->model->all();
-  }
-
-  /**
-   * Get one resource.
+   * Set data to Model.
    *
    * @param string $id
-   * @return App\Models\Installment
+   * @return App\Models\Sale
    */
-  public function show(string $id) : ?Installment
+  public function calculateInstallments(array $data) : ?array
   {
-    return $this->model->find($id);
-  }
+    $dataInstallments = [];
+    $dateInstallment = convertToDate($data['date']);
+    $totalAmount = convertToDouble($data['amount']);
+    $totalInstallments = intval($data['installments']);
+    $installmentValue = $totalAmount / $totalInstallments;
+    $installment = 0;
 
-  /**
-   * Store or update one resource.
-   *
-   * @param Illuminate\Http\Request $request
-   * @param string $id
-   * @return App\Models\Installment
-   */
-  public function storeOrUpdate(Request $request, string $id) : ?Installment
-  {
-    $installment = $this->model->find($id);
-    return (!$installment) ? $this->model->create($request->all()) : tap($installment)->update($request->all());
-  }
+    for ($i=0; $i < $totalInstallments; $i++) {
+      $dataInstallments[] = [
+        'installment' => ($i + 1),
+        'amount' => round($installmentValue, 2),
+        'date' => date('Y-m-d', strtotime('+' . ($i + 1) . 'months', strtotime($dateInstallment)))
+      ];
 
-  /**
-   * Delete one resource.
-   *
-   * @param string $id
-   * @return App\Models\Installment
-   */
-  public function delete(string $id) : ?Installment
-  {
-    return $this->model->find($id)->delete();
+      $installment += formatNumber($installmentValue);
+      if ($installment > $totalAmount) {
+        $diff = $installment - $totalAmount;
+        $dataInstallments[$i]['amount'] -= $diff;
+      }
+    }
+
+    return $dataInstallments;
   }
 }

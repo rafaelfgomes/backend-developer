@@ -2,13 +2,17 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Facades\Date;
 use Jenssegers\Mongodb\Eloquent\Model;
 
 class Sale extends Model
 {
   /**
-   * @var Date
+   * @var int
+   */
+  private $code;
+
+  /**
+   * @var string
    */
   private $date;
 
@@ -25,16 +29,27 @@ class Sale extends Model
    * @var array
    */
   protected $fillable = [
+    'code',
     'date',
     'amount'
   ];
 
-  public function getDate() : Date
+  public function getCode() : int
+  {
+    return $this->code;
+  }
+
+  public function setCode(int $code) : void
+  {
+    $this->code = $code;
+  }
+
+  public function getDate() : string
   {
     return $this->date;
   }
 
-  public function setDate(Date $date) : void
+  public function setDate(string $date) : void
   {
     $this->date = $date;
   }

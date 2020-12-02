@@ -2,14 +2,14 @@
 
 namespace App\Repositories;
 
+use GuzzleHttp\Client;
 use App\Models\Address;
-use App\Interfaces\RepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Http\Request;
 
-class AddressRepository implements RepositoryInterface
+class AddressRepository
 {
-  private $model;
+  private $address;
+  private $client;
 
   /**
    * Create a new repository instance.
@@ -18,51 +18,32 @@ class AddressRepository implements RepositoryInterface
    */
   public function __construct(Address $address)
   {
-    $this->model = $address;
+    $this->address = $address;
+    $this->client = new Client(['base_uri' => 'https://viacep.com.br/']);
   }
 
-  /**
-   * Get all resources.
-   *
-   * @return Illuminate\Database\Eloquent\Collection
-   */
-  public function all() : ?Collection
+  public function setData(array $data) : void
   {
-    return $this->model->all();
+    $response = $this->client->request('GET', "ws/{$data['postalCode']}/json");
+    $json = json_decode($response->getBody());
+
+    $this->address->setStreet($json->logradouro);
+    $this->address->setNeighborhood($json->bairro);
+    $this->address->setCity($json->localidade);
+    $this->address->setState($json->uf);
+    $this->address->setPostalCode($json->cep);
   }
 
-  /**
-   * Get one resource.
-   *
-   * @param string $id
-   * @return App\Models\Address
-   */
-  public function show(string $id) : ?Address
+  public function getFields() : ?array
   {
-    return $this->model->find($id);
-  }
+    $address = [
+      'street' => $this->address->getStreet(),
+      'neighborhood' => $this->address->getNeighborhood(),
+      'city' => $this->address->getCity(),
+      'state' => $this->address->getState(),
+      'postal_code' => $this->address->getPostalCode()
+    ];
 
-  /**
-   * Store or update one resource.
-   *
-   * @param Illuminate\Http\Request $request
-   * @param string $id
-   * @return App\Models\Address
-   */
-  public function storeOrUpdate(Request $request, string $id) : ?Address
-  {
-    $example = $this->model->find($id);
-    return (!$example) ? $this->model->create($request->all()) : tap($example)->update($request->all());
-  }
-
-  /**
-   * Delete one resource.
-   *
-   * @param string $id
-   * @return App\Models\Address
-   */
-  public function delete(string $id) : ?Address
-  {
-    return $this->model->find($id)->delete();
+    return $address;
   }
 }
