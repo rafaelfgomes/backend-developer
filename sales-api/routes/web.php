@@ -13,5 +13,9 @@
 |
 */
 
-$router->get('/', 'HomeController@index');
-$router->post('/upload-sales', 'SalesController@uploadSales');
+$apiPrefix = 'api/' . env('API_VERSION');
+
+$router->group([ 'prefix' => $apiPrefix ], function () use ($router) {
+  $router->get('/', 'HomeController@index');
+  $router->post('/upload-sales', 'SalesController@uploadSales');
+});
