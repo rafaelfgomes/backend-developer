@@ -3,9 +3,9 @@
 namespace App\Repositories;
 
 use App\Models\Sale;
-use App\Interfaces\RepositoryInterface;
+use App\Interfaces\SaleInterface;
 
-class SaleRepository implements RepositoryInterface
+class SaleRepository implements SaleInterface
 {
   private $sale;
 

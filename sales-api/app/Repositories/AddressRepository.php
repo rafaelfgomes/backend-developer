@@ -4,9 +4,8 @@ namespace App\Repositories;
 
 use GuzzleHttp\Client;
 use App\Models\Address;
-use App\Interfaces\RepositoryInterface;
-
-class AddressRepository implements RepositoryInterface
+use App\Interfaces\AddressInterface;
+class AddressRepository implements AddressInterface
 {
   private $address;
   private $client;

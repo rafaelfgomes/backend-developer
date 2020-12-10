@@ -2,7 +2,7 @@
 
 namespace App\Interfaces;
 
-interface RepositoryInterface
+interface AbstractInterface
 {
   public function setData(array $data) : void;
   public function getFields() : ?array;

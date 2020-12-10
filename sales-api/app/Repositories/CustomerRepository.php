@@ -3,9 +3,9 @@
 namespace App\Repositories;
 
 use App\Models\Customer;
-use App\Interfaces\RepositoryInterface;
+use App\Interfaces\CustomerInterface;
 
-class CustomerRepository implements RepositoryInterface
+class CustomerRepository implements CustomerInterface
 {
   private $customer;
 

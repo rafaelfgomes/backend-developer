@@ -2,17 +2,20 @@
 
 namespace App\Services;
 
+use App\Interfaces\AddressInterface;
+use App\Interfaces\CustomerInterface;
+use App\Interfaces\SaleInterface;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use App\Interfaces\RepositoryInterface;
+use App\Repositories\InstallmentRepository;
 
-class SalesService
+class SaleService
 {
   /**
    *
-   * @var SalesRespository
+   * @var SaleRespository
    */
-  private $salesRepository;
+  private $saleRepository;
 
   /**
    *
@@ -31,9 +34,9 @@ class SalesService
    *
    * @return void
    */
-  public function __construct(RepositoryInterface $salesRepository, RepositoryInterface $installmentRepository,RepositoryInterface $customerRepository, RepositoryInterface $addressRepository)
+  public function __construct(SaleInterface $saleRepository, InstallmentRepository $installmentRepository,CustomerInterface $customerRepository, AddressInterface $addressRepository)
   {
-    $this->salesRepository = $salesRepository;
+    $this->saleRepository = $saleRepository;
     $this->installmentRepository = $installmentRepository;
     $this->customerRepository = $customerRepository;
     $this->addressRepository = $addressRepository;
@@ -59,11 +62,11 @@ class SalesService
     fclose($file);
 
     foreach ($data as $value) {
-      $this->salesRepository->setData($value);
+      $this->saleRepository->setData($value);
       $this->customerRepository->setData($value);
       $this->addressRepository->setData($value);
 
-      $sales = $this->salesRepository->getFields();
+      $sales = $this->saleRepository->getFields();
       $customer = $this->customerRepository->getFields();
       $address = $this->addressRepository->getFields();
       $installments = $this->installmentRepository->calculateInstallments($value);

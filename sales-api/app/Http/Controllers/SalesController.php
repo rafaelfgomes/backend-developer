@@ -3,29 +3,29 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Services\SalesService;
+use App\Services\SaleService;
 use Illuminate\Http\JsonResponse;
 
 class SalesController extends Controller
 {
   /**
    *
-   * @var SalesService
+   * @var SaleService
    */
-  private $salesService;
+  private $saleService;
 
   /**
    * Create a new controller instance.
    *
    * @return void
    */
-  public function __construct(SalesService $salesService)
+  public function __construct(SaleService $saleService)
   {
-    $this->salesService = $salesService;
+    $this->saleService = $saleService;
   }
 
   public function uploadSales(Request $request): JsonResponse
   {
-    return $this->salesService->uploadSales($request);
+    return $this->saleService->uploadSales($request);
   }
 }

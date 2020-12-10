@@ -14,4 +14,4 @@
 */
 
 $router->get('/', 'HomeController@index');
-$router->get('/upload-sales', 'SalesController@uploadSales');
+$router->post('/upload-sales', 'SalesController@uploadSales');
